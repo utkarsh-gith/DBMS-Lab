@@ -1,0 +1,150 @@
+2a. ----------------------- -----------------------
+vi 2a.sh 
+
+#!/bin/bash
+echo "creating"
+i=1
+while [ $i -le 10 ]
+do
+        mkdir MSRITDept$i
+        cd MSRITDept$i
+        j=1
+        while [ $j -le 10 ]
+        do
+                touch MSRITStudDetails$j
+                j=$(($j+1))
+        done
+        cd ..
+        i=$(($i+1))
+done
+
+sh 2a.sh
+tree
+
+2b. -----------------------
+vi 2b.sh
+
+#!/bin/bash
+if [ $# -eq 0 ]
+then
+        echo "File does not exist"
+else
+        ls -l "$1" > t1
+        x=$(cut -d ' ' -f 1,6,7,8,9 t1)
+        echo "$x"
+fi
+
+
+sh 2b.sh 2a.sh
+
+3a. -----------------------
+vi 3a.sh
+
+#!/bin/bash
+for i in $*
+do
+        if [ -d $i ]
+        then
+                echo "Large file name size is:"
+                echo `ls -lR $1 | grep "^-" | tr -s ' ' | cut -d ' ' -f 5 | sort -n | tail -1`
+        else
+                echo "Not a directory "
+        fi
+done
+
+sh 3a.sh dir1
+
+4a. ----------------------- -----------------------
+#!/bin/bash
+space_usage=$( df -h / | awk ' NR == 2 { print $5 } ' | cut -d '%' -f 1 )
+echo "System space usage:$space_usage%"
+
+if [ "$space_usage" -gt 40 ];then
+        echo  "Low storage space"
+
+
+        echo "Files larger than 1 GB:"
+        find / -type f -size  +1G -exec ls -lh {} \;
+fi
+
+4b. -----------------------
+#!/bin/bash
+
+stats(){
+        input="$1"
+        char=$(echo -n "$input" | wc -m )
+        word=$(echo "$input" | wc -w )
+        space=$(echo "$input" | tr -cd ' ' | wc -c )
+        special=$(echo "$input" | tr -cd '[:punct:]' | wc -c )
+
+        echo  "char=$char word=$word space=$space special=$special"
+}
+text="Helli i am @ your house"
+stats "$text"
+~             
+
+5a. ----------------------- -----------------------
+vi 5a.wak
+
+ split ( $0 , arr , "-" )
+        if ((arr[1]<1) || (arr[1]>31) || (arr[2]<1) || (arr[2]>12))
+        {
+                print "Invalid date"
+                exit 0
+        }
+        else
+        {
+                printf "%d\n",arr[1]
+                if(arr[2]==1)
+                        print "Jan"
+                if(arr[2]==2)
+                        print "Feb"
+                if(arr[2]==3)
+                        print "Mar"
+                if(arr[2]==4)
+                        print "Apr"
+                if(arr[2]==5)
+                        print "May"
+                if(arr[2]==6)
+                        print "Jun"
+                if(arr[2]==7)
+                        print "Jul"
+                if(arr[2]==8)
+                        print "Aug"
+                if(arr[2]==9)
+                        print "Sept"
+                if(arr[2]==10)
+                        print "Oct"
+                if(arr[2]==11)
+                        print "Nov"
+                if(arr[2]==12)
+                        print "Dec"
+                printf "%d",arr[3]
+        }
+}
+
+awk -f 5a.awk
+
+5b. -----------------------
+vi 5b.awk
+
+EGIN{
+        echo "Removing duplicate lines"
+}
+{
+        line[++no] = $0
+}
+END{
+        for(i=0;i<=no;i++)
+        {
+                flag = 1
+                for(j=0;j<i;j++)
+                        if(line[i]==line[j])
+                        flag = 0
+
+                if(flag==1)
+                        print line[i]>"out.txt"
+        }
+}
+
+awk '!seen[$0]++' input.txt>out.txt
